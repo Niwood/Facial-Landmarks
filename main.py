@@ -17,14 +17,13 @@ from tqdm import tqdm
 import warnings
 warnings.filterwarnings("ignore")
 
-print('TEST'), quit()
 
-# def show_landmarks(image, landmarks):
-#     """Show image with landmarks"""
-#     plt.imshow(image)
-#     plt.scatter(landmarks[:, 0], landmarks[:, 1], s=10, marker='.', c='r')
-#     plt.pause(0.001)  # pause a bit so that plots are updated
-#
+def show_landmarks(image, landmarks):
+    """Show image with landmarks"""
+    plt.imshow(image)
+    plt.scatter(landmarks[:, 0], landmarks[:, 1], s=10, marker='.', c='r')
+    plt.pause(0.001)  # pause a bit so that plots are updated
+
 
 
 class FaceLandmarksDataset(Dataset):
