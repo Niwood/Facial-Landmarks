@@ -17,7 +17,7 @@ from tqdm import tqdm
 import warnings
 warnings.filterwarnings("ignore")
 
-
+print('TEST'), quit()
 
 def show_landmarks(image, landmarks):
     """Show image with landmarks"""
