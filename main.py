@@ -6,7 +6,7 @@ from torch import optim
 import pandas as pd
 from skimage import io, transform
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import transforms, utils
 from tools import Rescale, RandomCrop, Normalize, ToTensor, DataSplit
@@ -19,12 +19,12 @@ warnings.filterwarnings("ignore")
 
 print('TEST'), quit()
 
-def show_landmarks(image, landmarks):
-    """Show image with landmarks"""
-    plt.imshow(image)
-    plt.scatter(landmarks[:, 0], landmarks[:, 1], s=10, marker='.', c='r')
-    plt.pause(0.001)  # pause a bit so that plots are updated
-
+# def show_landmarks(image, landmarks):
+#     """Show image with landmarks"""
+#     plt.imshow(image)
+#     plt.scatter(landmarks[:, 0], landmarks[:, 1], s=10, marker='.', c='r')
+#     plt.pause(0.001)  # pause a bit so that plots are updated
+#
 
 
 class FaceLandmarksDataset(Dataset):
