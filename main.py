@@ -17,6 +17,7 @@ from tqdm import tqdm
 import warnings
 warnings.filterwarnings("ignore")
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def show_landmarks(image, landmarks):
     """Show image with landmarks"""
@@ -61,6 +62,7 @@ class FaceLandmarksDataset(Dataset):
 
         return sample
 
+
 # Create dataset, transform and split
 dataset = FaceLandmarksDataset(csv_file='data/faces/face_landmarks.csv',
                                 root_dir='data/faces/',
@@ -94,7 +96,7 @@ class Model(nn.Module):
         self.convs(x)
 
         self.fc1 = nn.Linear(self._to_linear, 512) #flattening.
-        self.fc2 = nn.Linear(512, 136) # 512 in, 136 out bc we're doing 68x2 facial landmarks
+        self.fc2 = nn.Linear(512, 136) # 136 outputs - 68x2 facial landmarks
 
     def convs(self, x):
         # max pooling over 2x2
@@ -108,15 +110,15 @@ class Model(nn.Module):
 
     def forward(self, x):
         x = self.convs(x)
-        x = x.view(-1, self._to_linear)  # .view is reshape ... this flattens X before
+        x = x.view(-1, self._to_linear)
         x = F.relu(self.fc1(x))
-        x = self.fc2(x) # bc this is our output layer. No activation here.
+        x = self.fc2(x) # No activation function on output layer
         return F.softmax(x, dim=1)
 
 
 
-model = Model()
-optimizer = optim.Adam(model.parameters(), lr = 0.1)
+model = Model().to(device)
+optimizer = optim.Adam(model.parameters(), lr = 0.0001)
 loss_function = nn.SmoothL1Loss()
 EPOCHS = 3
 BATCH_SIZE = 5
@@ -124,17 +126,22 @@ BATCH_SIZE = 5
 for epoch in range(EPOCHS):
     for i in tqdm(range(0, len(train_X), BATCH_SIZE)):
 
-        batch_X = train_X[i:i+BATCH_SIZE].view(-1, 1, 224, 224)
-        batch_y = train_y[i:i+BATCH_SIZE].view(-1, 68*2)
+        batch_X = train_X[i:i+BATCH_SIZE].view(-1, 1, 224, 224).to(device)
+        batch_y = train_y[i:i+BATCH_SIZE].view(-1, 68*2).to(device)
 
+        # print(batch_X.size())
+        # print(batch_y.size())
+        # print(batch_X[0].size())
+        # print(batch_y[0].size())
+        # print(batch_y[0])
+        # quit()
 
         model.zero_grad()
 
         outputs = model(batch_X)
-
         loss = loss_function(outputs, batch_y)
-        loss.backward()
-        optimizer.step()    # Does the update
+        loss.backward()     # Backprop
+        optimizer.step()    # Update weights
 
     print('Epoch: {}. Loss: {}'.format(epoch+1, loss))
 
